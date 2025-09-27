@@ -1,11 +1,37 @@
 (function () {
   "use strict";
 
+  const updateLogoVariant = () => {
+    const ud_header = document.querySelector(".ud-header");
+    const headerLogo = document.querySelector(".header-logo");
+
+    if (!ud_header || !headerLogo) {
+      return;
+    }
+
+    const isSticky = ud_header.classList.contains("sticky");
+    const isDarkMode = document.documentElement.classList.contains("dark");
+
+    if (headerLogo instanceof HTMLImageElement) {
+      if (isSticky) {
+        headerLogo.src = isDarkMode
+          ? "assets/images/logo/logo-white.svg"
+          : "assets/images/logo/logo.svg";
+      } else {
+        headerLogo.src = isDarkMode
+          ? "assets/images/logo/logo-white.svg"
+          : "assets/images/logo/logo-white.svg";
+      }
+    } else {
+      headerLogo.classList.toggle("text-dark", isSticky && !isDarkMode);
+      headerLogo.classList.toggle("text-white", !isSticky || isDarkMode);
+    }
+  };
+
   // ======= Sticky
   window.onscroll = function () {
     const ud_header = document.querySelector(".ud-header");
     const sticky = ud_header.offsetTop;
-    const logo = document.querySelectorAll(".header-logo");
 
     if (window.pageYOffset > sticky) {
       ud_header.classList.add("sticky");
@@ -13,26 +39,7 @@
       ud_header.classList.remove("sticky");
     }
 
-    if(logo.length) {
-      // === logo change
-      if (ud_header.classList.contains("sticky")) {
-        document.querySelector(".header-logo").src =
-          "assets/images/logo/logo.svg"
-      } else {
-        document.querySelector(".header-logo").src =
-          "assets/images/logo/logo-white.svg"
-      }
-    }
-
-    if (document.documentElement.classList.contains("dark")) {
-      if(logo.length) {
-        // === logo change
-        if (ud_header.classList.contains("sticky")) {
-          document.querySelector(".header-logo").src =
-            "assets/images/logo/logo-white.svg"
-        } 
-      }
-    }
+    updateLogoVariant();
 
     // show or hide the back-top-top button
     const backToTop = document.querySelector(".back-to-top");
@@ -125,7 +132,7 @@
 
   // Theme Vars
   const userTheme = localStorage.getItem('theme');
-  const systemTheme = window.matchMedia('(prefers-color0scheme: dark)').matches;
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
   // Initial Theme Check
   const themeCheck = () => {
@@ -140,11 +147,13 @@
     if (document.documentElement.classList.contains('dark')) {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
+      updateLogoVariant();
       return;
     }
 
     document.documentElement.classList.add('dark');
     localStorage.setItem('theme', 'dark');
+    updateLogoVariant();
   };
 
   // call theme switch on clicking buttons
@@ -154,5 +163,7 @@
 
   // invoke theme check on initial load
   themeCheck();
+  updateLogoVariant();
+  window.onscroll();
   /* ========  themeSwitcher End ========= */
 })();
